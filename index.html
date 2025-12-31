@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Special for Umra 💖</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif;}
+body {
+  height:100vh; display:flex; justify-content:center; align-items:center;
+  background: pink; overflow:hidden; position:relative; color:white;
+  transition: background 2s;
+  perspective: 1000px;
+}
+/* ===== OPENING GLOWING TEXT ===== */
+#openingText {
+  font-size:3rem; color:#ff1493;
+  text-shadow:0 0 20px #ff69b4,0 0 40px #ffb6c1;
+  animation: glow 2s infinite alternate; text-align:center;
+  position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+}
+@keyframes glow { from {text-shadow:0 0 15px #ff69b4,0 0 30px #ffb6c1;} to {text-shadow:0 0 30px #ff1493,0 0 60px #ff69b4;}}
+
+/* ===== CONTAINER FOR WISHES ===== */
+#wishContainer { display:none; text-align:center; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);}
+.wishText { font-size:2rem; color:#da70d6; min-height:50px; opacity:0; transition: opacity 1s ease; }
+
+/* ===== ENDING TEXT ===== */
+#endingQuestion, #finalWords { display:none; text-align:center; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);}
+#endingQuestion { font-size:2rem; color:#ff1493; margin-bottom:20px; }
+#finalWords { font-size:2.5rem; color:#ff69b4; text-shadow:0 0 20px #fff,0 0 40px #ffd700; animation: glow 2s infinite alternate; }
+
+/* ===== FIREWORKS CANVAS ===== */
+canvas { position:fixed; top:0; left:0; z-index:0; }
+
+/* ===== FLOATING HEARTS ===== */
+.heart {
+  position: absolute;
+  font-size: 20px;
+  color: #ff69b4;
+  opacity: 0.7;
+  animation: floatUp 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity:0.7; }
+  50% { transform: translateY(-150px) scale(1.2); opacity:1; }
+  100% { transform: translateY(-300px) scale(1); opacity:0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Background Music -->
+<audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" autoplay loop></audio>
+
+<!-- Opening Glowing Text -->
+<div id="openingText">This is for you Umra ❤️ from my side</div>
+
+<!-- Wishes Container -->
+<div id="wishContainer"><div class="wishText" id="wish"></div></div>
+
+<!-- Ending Text -->
+<div id="endingQuestion">Did you forget me?</div>
+<div id="finalWords">Try to remember how we met and continued our short journey</div>
+
+<!-- Fireworks Canvas -->
+<canvas id="fireworks"></canvas>
+
+<script>
+// ===== OPENING TEXT =====
+const openingText = document.getElementById('openingText');
+const wishContainer = document.getElementById('wishContainer');
+const endingQuestion = document.getElementById('endingQuestion');
+const finalWords = document.getElementById('finalWords');
+const body = document.body;
+const bgMusic = document.getElementById('bgMusic');
+
+// Hide opening text after 3 sec, show wishes
+setTimeout(()=>{
+  openingText.style.transition = 'opacity 2s';
+  openingText.style.opacity = 0;
+},3000);
+
+setTimeout(()=>{
+  openingText.style.display = 'none';
+  wishContainer.style.display = 'block';
+  startWishes();
+},5000);
+
+// ===== WISHES FADE-IN =====
+const wishes = [
+  "May this year bring you endless joy 💫",
+  "May your dreams come true ✨",
+  "Wishing you peace and love 🤍",
+  "Hope your year sparkles with happiness 🌟",
+  "Cheers to beautiful moments ahead 🍀"
+];
+
+let i = 0;
+const wishElement = document.getElementById("wish");
+
+function startWishes(){
+  showNextWish();
+}
+
+function showNextWish(){
+  if(i < wishes.length){
+    wishElement.innerHTML = wishes[i];
+    wishElement.style.opacity = 1;
+    setTimeout(()=>{
+      wishElement.style.opacity = 0;
+      i++;
+      setTimeout(showNextWish,800);
+    },2000);
+  } else {
+    wishContainer.style.display = 'none';
+    startEnding();
+  }
+}
+
+// ===== ENDING =====
+function startEnding(){
+  body.style.background = 'linear-gradient(135deg, #0a0a36, #2a2a72)';
+  bgMusic.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3";
+  bgMusic.play();
+  endingQuestion.style.display = 'block';
+  setTimeout(()=>{
+    endingQuestion.style.display = 'none';
+    finalWords.style.display = 'block';
+  },3000);
+}
+
+// ===== FIREWORKS CANVAS =====
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+window.addEventListener("resize",()=>{
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+});
+
+class Firework{
+  constructor(){
+    this.x = Math.random()*canvas.width;
+    this.y = canvas.height;
+    this.targetY = Math.random()*canvas.height/2;
+    this.speed = 4;
+    this.exploded = false;
+    this.particles = [];
+  }
+
+  explode(){
+    for(let i=0;i<50;i++){
+      this.particles.push({
+        x:this.x,
+        y:this.y,
+        dx:(Math.random()-0.5)*6,
+        dy:(Math.random()-0.5)*6,
+        life:100
+      });
+    }
+  }
+
+  update(){
+    if(!this.exploded){
+      this.y -= this.speed;
+      if(this.y <= this.targetY){
+        this.exploded = true;
+        this.explode();
+      }
+    }
+    this.particles.forEach(p=>{
+      p.x += p.dx;
+      p.y += p.dy;
+      p.life--;
+    });
+  }
+
+  draw(){
+    if(!this.exploded){
+      ctx.fillStyle="white";
+      ctx.fillRect(this.x,this.y,2,10);
+    }
+    this.particles.forEach(p=>{
+      ctx.fillStyle=`hsl(${Math.random()*360},100%,60%)`;
+      ctx.fillRect(p.x,p.y,3,3);
+    });
+  }
+}
+
+let fireworks=[];
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(Math.random()<0.05){
+    fireworks.push(new Firework());
+  }
+  fireworks.forEach((f,i)=>{
+    f.update();
+    f.draw();
+    if(f.exploded && f.particles.every(p=>p.life<=0)){
+      fireworks.splice(i,1);
+    }
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ===== FLOATING HEARTS =====
+function createHeart(){
+  const heart = document.createElement('div');
+  heart.classList.add('heart');
+  heart.style.left = Math.random()*window.innerWidth + 'px';
+  heart.style.fontSize = (Math.random()*20+20)+'px';
+  body.appendChild(heart);
+  setTimeout(()=>{ body.removeChild(heart); },6000);
+}
+setInterval(createHeart, 500);
+</script>
+</body>
+</html>
